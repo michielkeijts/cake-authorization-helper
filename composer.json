@@ -1,0 +1,38 @@
+{
+	"name": "michielkeijts/cake-authorization-helper",
+	"type": "cakephp-plugin",
+	"description": "CakePHP plugin with some extra functions for the Authorization Plugin",
+	"keywords": ["cakephp","rest","api","dataobject"],
+	"homepage": "http://github.com/michielkeijts/cake-authorization-helper",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Michiel Keijts",
+			"homepage": "http://www.michielkeijts.nl",
+			"role": "Contributor"
+		}
+	],
+	"require": {
+		"php": ">=7.2",
+		"cakephp/cakephp": ">=4.0"
+    "cakephp/authorization": ">=2.0"
+	},
+	"require-dev": {
+	},
+	"suggest": {
+	},
+	"support": {
+		"source": "https://github.com/michielkeijts/cake-authorization-helper"
+	},
+	"autoload": {
+		"psr-4": {
+			"CakeAuthorizationHelper\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+		}
+	},
+	"scripts": {
+	}
+}
