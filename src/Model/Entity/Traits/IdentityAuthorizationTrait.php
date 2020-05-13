@@ -40,12 +40,14 @@ trait IdentityAuthorizationTrait {
     public function getAuthorizationLevel(): int
     {
         $authorization_level = 0;
-        if (!isset($this->usergroups) || empty($this->usergroups)) {
+        if (!isset($this->usergroup) || empty($this->usergroup)) {
             return $authorization_level;
         }
         
+        $usergroups = !is_array($this->usergroup) ? [$this->usergroup] : $this->usergroup;
+        
         /* @var $usergroup \App\Model\Entity\Usergroup */
-        foreach ($this->usergroups as $usergroup) {
+        foreach ($usergroups as $usergroup) {
             if ($usergroup->level > $authorization_level) {
                 $authorization_level = $usergroup->level;
             }                
@@ -86,7 +88,8 @@ trait IdentityAuthorizationTrait {
      */
     protected function getAuthorizationMapper(int $level): array
     {
-        $mapper = Cache::remember($key, function() { return AuthorizationHelper::loadAuthorizationMap(); }, 'default');
+        //$mapper = Cache::remember('AuthorizationMapperLoader', function() { return AuthorizationHelper::loadAuthorizationMap(); }, 'default');
+        $mapper = AuthorizationHelper::loadAuthorizationMap(); // for debug purposes
         
         if (!isset($mapper[$level])) {
             return [];

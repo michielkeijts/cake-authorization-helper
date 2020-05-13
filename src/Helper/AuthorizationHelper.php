@@ -25,10 +25,10 @@ class AuthorizationHelper {
             return self::$_map;
         }
         
-        $contents = file_get_contents($filename);
+        $contents = file_get_contents(TMP. 'authorization_levels.json');
         
         $decoded = json_decode($contents, TRUE);
-        if (json_last_error() === JSON_ERROR_NONE || !is_array($decoded)) {
+        if (json_last_error() != JSON_ERROR_NONE || !is_array($decoded)) {
             throw new Exception("Invalid Authorization Map defined. Please run bin/cake migrations seed --seed=SetupSeed");
         }
                
