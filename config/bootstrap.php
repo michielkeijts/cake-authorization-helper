@@ -1,7 +1,7 @@
 <?php
-/* 
+/*
  * @copyright (C) 2020 Michiel Keijts, Normit
- * 
+ *
  */
 
 /**
@@ -13,4 +13,8 @@ if (!defined("SUPERADMIN_AUTHORIZATION_LEVEL")) {
 
 if (!defined("LOCALE_FIELD_SEPARATOR")) {
     define("LOCALE_FIELD_SEPARATOR",".");
+}
+
+if (!defined("AUTHORIZATION_LEVELS_FILE")) {
+     define("AUTHORIZATION_LEVELS_FILE", TMP. 'authorization_levels.json');
 }
