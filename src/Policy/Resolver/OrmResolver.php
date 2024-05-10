@@ -4,7 +4,7 @@
  *
  */
 
-namespace App\Policy\Resolver;
+namespace CakeAuthorizationHelper\Policy\Resolver;
 
 use Authorization\Policy\OrmResolver as BaseResolver;
 use Cake\Datasource\RepositoryInterface;
