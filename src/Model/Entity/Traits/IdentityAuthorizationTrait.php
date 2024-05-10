@@ -1,11 +1,13 @@
 <?php
-/* 
+/*
  * @copyright (C) 2020 Michiel Keijts, Normit
- * 
+ *
  */
 
 namespace CakeAuthorizationHelper\Model\Entity\Traits;
 
+use Authorization\AuthorizationServiceInterface;
+use Authorization\Policy\ResultInterface;
 use Cake\Utility\Hash;
 use Cake\Cache\Cache;
 use Cake\Datasource\EntityInterface;
@@ -16,11 +18,50 @@ use CakeAuthorizationHelper\Helper\AuthorizationHelper;
  * has access
  */
 trait IdentityAuthorizationTrait {
-    
+    /**
+     * @var AuthorizationServiceInterface
+     */
+    protected AuthorizationServiceInterface $Authorization;
+
+    /**
+     * {@inheritDoc}
+     */
+    public function can(string $action, mixed $resource): bool
+    {
+        return $this->Authorization->can($this, $action, $resource);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function canResult(string $action, mixed $resource): ResultInterface
+    {
+        return $this->Authorization->canResult($this, $action, $resource);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function applyScope(string $action, mixed $resource, mixed ...$optionalArgs): mixed
+    {
+        return $this->Authorization->applyScope($this, $action, $resource);
+    }
+
+    /**
+     * Setter to be used by the middleware.
+     * @param AuthorizationServiceInterface $service
+     * @return $this
+     */
+    public function setAuthorization(AuthorizationServiceInterface $service)
+    {
+        $this->Authorization = $service;
+
+        return $this;
+    }
     /**
      * Checks if the user hase Authorization for a specific key (defined by $entity)
      * Fall back
-     * 
+     *
      * @param string $authorization_key
      * @param EntityInterface $entity
      * @param bool $default (FALSE) The default fallback if not defined
@@ -29,10 +70,10 @@ trait IdentityAuthorizationTrait {
     public function isAuthorized($authorization_key, EntityInterface $entity, bool $default = FALSE): bool
     {
         $mapper = $this->getAuthorizationMapper($this->getAuthorizationLevel());
-        
+
         return $this->mapAuthorization($authorization_key, $mapper, $default || $this->isSuperAdmin());
     }
-    
+
     /**
      * Gets the maximum level of authorization from the underlying usergroups
      * @return int
@@ -43,19 +84,19 @@ trait IdentityAuthorizationTrait {
         if (!isset($this->usergroup) || empty($this->usergroup)) {
             return $authorization_level;
         }
-        
+
         $usergroups = !is_array($this->usergroup) ? [$this->usergroup] : $this->usergroup;
-        
+
         /* @var $usergroup \App\Model\Entity\Usergroup */
         foreach ($usergroups as $usergroup) {
             if ($usergroup->level > $authorization_level) {
                 $authorization_level = $usergroup->level;
-            }                
+            }
         }
-        
+
         return $authorization_level;
     }
-    
+
     /**
      * Superadmin skips all authority checks
      * @return bool
@@ -64,7 +105,7 @@ trait IdentityAuthorizationTrait {
     {
         return $this->getAuthorizationLevel() >= SUPERADMIN_AUTHORIZATION_LEVEL;
     }
-    
+
     /**
      * Maps the $key to the $mapper, in this case an array with boolean
      * @param string $key
@@ -77,12 +118,12 @@ trait IdentityAuthorizationTrait {
         if (!array_key_exists($key, $mapper)) {
             return $default;
         }
-        
+
         return (bool)$mapper[$key];
     }
-    
+
     /**
-     * Get the mapper for the Authorization. Returns empty mapper if not anything defined. 
+     * Get the mapper for the Authorization. Returns empty mapper if not anything defined.
      * @param int $level
      * @return array
      */
@@ -90,11 +131,11 @@ trait IdentityAuthorizationTrait {
     {
         //$mapper = Cache::remember('AuthorizationMapperLoader', function() { return AuthorizationHelper::loadAuthorizationMap(); }, 'default');
         $mapper = AuthorizationHelper::loadAuthorizationMap(); // for debug purposes
-        
+
         if (!isset($mapper[$level])) {
             return [];
         }
-        
+
         return $mapper[$level];
     }
 }
