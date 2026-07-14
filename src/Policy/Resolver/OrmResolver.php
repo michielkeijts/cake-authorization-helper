@@ -8,6 +8,7 @@ namespace CakeAuthorizationHelper\Policy\Resolver;
 
 use Authorization\Policy\OrmResolver as BaseResolver;
 use Cake\Datasource\RepositoryInterface;
+use Cake\ORM\TableRegistry;
 
 /**
  * OrmResolver works as the basic OrmResolver, but destinguishes not between entity and tables, so uses less files
@@ -19,11 +20,13 @@ class OrmResolver extends BaseResolver {
      * @param \Cake\Datasource\RepositoryInterface $table The table/repository to get a policy for.
      * @return mixed
      */
-    protected function getRepositoryPolicy(RepositoryInterface $table): mixed
+    protected function getRepositoryPolicy(string $table): mixed
     {
         if (!method_exists($table, 'getEntityClass')) {
             return parent::getRepositoryPolicy($table);
         }
+
+        $table = TableRegistry::getTableLocator()->get($table);
 
         $class = $table->getEntityClass();
         $entityNamespace = '\\Model\Entity\\';
